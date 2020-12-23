@@ -1,0 +1,41 @@
+{
+    "builders": [{
+        "name": "CentOS8",
+        "CPUs": 2,
+        "RAM": 4096,
+        "RAM_reserve_all": true,
+        "type": "vsphere-iso",
+        "vcenter_server": "{{user `vcenter_server`}}",
+        "username": "{{user `vcenter_username`}}",
+        "password": "{{user `vcenter_password`}}",
+        "insecure_connection": "true",
+        "vm_name": "centos8",
+        "vm_version": 15,
+        "ssh_username": "{{user `ssh_username`}}",
+        "ssh_password": "{{user `ssh_password`}}",
+        "boot_order": "disk,cdrom",
+        "cluster": "{{user `vcenter_cluster`}}",
+        "communicator": "ssh",
+        "create_snapshot": "false",
+        "convert_to_template": "true",
+        "datastore": "{{user `vcenter_datastore`}}",
+        "disk_controller_type": "pvscsi",
+        "boot_command": [
+            "<esc><wait>",
+            "linux ks=hd:sr1:/kickstart.cfg<enter>"
+        ],
+        "guest_os_type": "centos8_64Guest",
+        "iso_paths": [
+            "{{user `centos8_iso`}}",
+            "{{user `kickstart_iso`}}"
+        ],
+        "network_adapters": [{
+            "network": "{{user `vcenter_network`}}",
+            "network_card": "vmxnet3"
+        }],
+        "storage": [{
+            "disk_size": 20480,
+            "disk_thin_provisioned": true
+        }]
+    }]
+}
