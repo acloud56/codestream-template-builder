@@ -21,7 +21,7 @@
             "boot_order": "disk,cdrom",
 
             "create_snapshot": "false",
-            "convert_to_template": "true",
+            "convert_to_template": "false",
             "disk_controller_type": "pvscsi",
             "boot_command": [
                 "<esc><wait>",
@@ -64,11 +64,11 @@
             "vm_version": 15,
             "guest_os_type": "windows9Server64Guest",
             "communicator": "winrm",
-            "winrm_password": "{{user `winrm_password`}}",
             "winrm_username": "{{user `winrm_username`}}",
+            "winrm_password": "{{user `winrm_password`}}",
             "boot_order": "disk,cdrom",
             "create_snapshot": "false",
-            "convert_to_template": "true",
+            "convert_to_template": "false",
             "disk_controller_type": "pvscsi",
             "floppy_files": [
                 "{{ template_dir }}/config/win2016/autounattend.xml",
@@ -112,11 +112,11 @@
             "vm_version": 15,
             "guest_os_type": "windows9Server64Guest",
             "communicator": "winrm",
-            "winrm_password": "{{user `winrm_password`}}",
             "winrm_username": "{{user `winrm_username`}}",
+            "winrm_password": "{{user `winrm_password`}}",
             "boot_order": "disk,cdrom",
             "create_snapshot": "false",
-            "convert_to_template": "true",
+            "convert_to_template": "false",
             "disk_controller_type": "pvscsi",
             "floppy_files": [
                 "{{ template_dir }}/config/win2019/autounattend.xml",
