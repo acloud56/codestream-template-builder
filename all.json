@@ -45,7 +45,7 @@
                 "destroy": true
             },
             "remove_cdrom": "true",
-            "notes": "Default SSH User: {{user `ssh_username`}}\nDefault SSH Pass: {{user `ssh_password`}}\nBuilt by Packer @ {{isotime \"2006-01-02 03:04\"}}."
+            "notes": "Default SSH User: {{user `ssh_username`}}\nDefault SSH Password: {{user `ssh_password`}}\nBuilt by Packer @ {{isotime \"02-01-2006 03:04 PM\"}}."
         },
         {
             "name": "Windows2016",
@@ -93,7 +93,7 @@
                 "destroy": true
             },
             "remove_cdrom": "true",
-            "notes": "Default User: {{user `winrm_username`}}\nDefault Pass: {{user `winrm_password`}}\nBuilt by Packer @ {{isotime \"2006-01-02 03:04\"}}."
+            "notes": "Default User: {{user `winrm_username`}}\nDefault Password: {{user `winrm_password`}}\nBuilt by Packer @ {{isotime \"02-01-2006 03:04 PM\"}}."
         },
         {
             "name": "Windows2019",
@@ -141,7 +141,7 @@
                 "destroy": true
             },
             "remove_cdrom": "true",
-            "notes": "Default User: {{user `winrm_username`}}\nDefault Pass: {{user `winrm_password`}}\nBuilt by Packer @ {{isotime \"2006-01-02 03:04\"}}."
+            "notes": "Default User: {{user `winrm_username`}}\nDefault Password: {{user `winrm_password`}}\nBuilt by Packer @ {{isotime \"02-01-2006 03:04 PM\"}}."
         }
     ],
     "provisioners": [{
