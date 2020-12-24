@@ -19,7 +19,6 @@
             "ssh_username": "{{user `ssh_username`}}",
             "ssh_password": "{{user `ssh_password`}}",
             "boot_order": "disk,cdrom",
-
             "create_snapshot": "false",
             "convert_to_template": "false",
             "disk_controller_type": "pvscsi",
@@ -145,6 +144,18 @@
         }
     ],
     "provisioners": [{
+            "only": [
+                "Windows2016",
+                "Windows2019"
+            ],
+            "type": "file",
+            "sources": [
+                "{{ template_dir }}/config/cloudbase-init.conf",
+                "{{ template_dir }}/config/cloudbase-init-unattend.conf"
+            ],
+            "destination": "C:\\Windows\\Temp\\config\\"
+        },
+        {
             "only": [
                 "Windows2016",
                 "Windows2019"
