@@ -1,0 +1,39 @@
+{
+    "vcenter_server": "{{ env `VCSERVER`}}",
+    "vcenter_username": "{{ env `VCUSER`}}",
+    "vcenter_password": "{{ env `VCPASS`}}",
+    "vcenter_datastore": "{{ env `VCDATASTORE`}}",
+    "vcenter_folder": "{{ env `VCFOLDER`}}",
+    "vcenter_cluster": "{{ env `VCCLUSTER`}}",
+    "vcenter_network": "{{ env `VCNETWORK`}}",
+
+    "buildtime": "{{ env `BUILDTIME`}}",
+
+    "ssh_username": "{{ env `SSHUSER`}}",
+    "ssh_password": "{{ env `SSHPASS`}}",
+
+    "winrm_username": "Administrator",
+    "winrm_password": "{{ env `SSHPASS`}}",
+
+    "http_server": "https://raw.githubusercontent.com/GaryFlynn/codestream-template-builder/main/config",
+
+    "ubuntu2004_vm_name": "ubuntu2004",
+    "ubuntu2004_iso": "[{{ env `VCDATASTORE`}}] ISOs/ubuntu-18.04.3-server-amd64.iso",
+    "ubuntu2004_checksum": "caf3fd69c77c439f162e2ba6040e9c320c4ff0d69aad1340a514319a9264df9f",
+
+    "centos8_vm_name": "centos8",
+    "centos8_iso": "[{{ env `VCDATASTORE`}}] ISOs/CentOS8.iso",
+    "centos8_checksum": "c87a2d81d67bbaeaf646aea5bedd70990078ec252fc52f5a7d65ff609871e255",
+
+    "winsows_2012r2_vm_name": "winsows2012r2",
+    "winsows_2012r2_iso": "[{{ env `VCDATASTORE`}}] ISOs/WindowsServer2012R2.iso",
+    "winsows_2012r2_checksum": "md5:5b5e08c490ad16b59b1d9fab0def883a",
+
+    "windows_2016_vm_name": "windows2016",
+    "windows_2016_iso": "[{{ env `VCDATASTORE`}}] ISOs/WindowsServer2016.iso",
+    "windows_2016_checksum": "md5:70721288bbcdfe3239d8f8c0fae55f1f",
+
+    "windows_2019_vm_name": "windows2019",
+    "windows_2019_iso": "[{{ env `VCDATASTORE`}}] ISOs/WindowsServer2019.iso",
+    "windows_2019_checksum": "md5:70fec2cb1d6759108820130c2b5496da"
+}

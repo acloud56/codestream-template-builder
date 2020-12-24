@@ -1,41 +1,191 @@
 {
     "builders": [{
-        "name": "CentOS8",
-        "CPUs": 2,
-        "RAM": 4096,
-        "RAM_reserve_all": true,
-        "type": "vsphere-iso",
-        "vcenter_server": "{{user `vcenter_server`}}",
-        "username": "{{user `vcenter_username`}}",
-        "password": "{{user `vcenter_password`}}",
-        "insecure_connection": "true",
-        "vm_name": "centos8",
-        "vm_version": 15,
-        "ssh_username": "{{user `ssh_username`}}",
-        "ssh_password": "{{user `ssh_password`}}",
-        "boot_order": "disk,cdrom",
-        "cluster": "{{user `vcenter_cluster`}}",
-        "communicator": "ssh",
-        "create_snapshot": "false",
-        "convert_to_template": "true",
-        "datastore": "{{user `vcenter_datastore`}}",
-        "disk_controller_type": "pvscsi",
-        "boot_command": [
-            "<esc><wait>",
-            "linux ks=hd:sr1:/kickstart.cfg<enter>"
-        ],
-        "guest_os_type": "centos8_64Guest",
-        "iso_paths": [
-            "{{user `centos8_iso`}}",
-            "{{user `kickstart_iso`}}"
-        ],
-        "network_adapters": [{
-            "network": "{{user `vcenter_network`}}",
-            "network_card": "vmxnet3"
-        }],
-        "storage": [{
-            "disk_size": 20480,
-            "disk_thin_provisioned": true
-        }]
-    }]
+            "name": "CentOS8",
+            "CPUs": 2,
+            "RAM": 4096,
+            "RAM_reserve_all": true,
+            "type": "vsphere-iso",
+            "vcenter_server": "{{user `vcenter_server`}}",
+            "username": "{{user `vcenter_username`}}",
+            "password": "{{user `vcenter_password`}}",
+            "cluster": "{{user `vcenter_cluster`}}",
+            "datastore": "{{user `vcenter_datastore`}}",
+            "folder": "{{user `vcenter_folder`}}",
+            "insecure_connection": "true",
+            "vm_name": "centos8",
+            "vm_version": 15,
+            "guest_os_type": "centos8_64Guest",
+            "communicator": "ssh",
+            "ssh_username": "{{user `ssh_username`}}",
+            "ssh_password": "{{user `ssh_password`}}",
+            "boot_order": "disk,cdrom",
+
+            "create_snapshot": "false",
+            "convert_to_template": "true",
+            "disk_controller_type": "pvscsi",
+            "boot_command": [
+                "<esc><wait>",
+                "linux ks={{user `http_server`}}/centos8.cfg<enter><wait>"
+            ],
+            "iso_checksum": "{{user `centos8_checksum`}}",
+            "iso_paths": [
+                "{{user `centos8_iso`}}"
+            ],
+            "network_adapters": [{
+                "network": "{{user `vcenter_network`}}",
+                "network_card": "vmxnet3"
+            }],
+            "storage": [{
+                "disk_size": 20480,
+                "disk_thin_provisioned": true
+            }],
+            "remove_cdrom": "true",
+            "notes": "Default SSH User: {{user `ssh_username`}}\nDefault SSH Pass: {{user `ssh_password`}}\nBuilt by Packer @ {{isotime \"2006-01-02 03:04\"}}."
+        },
+        {
+            "name": "Windows2016",
+            "CPUs": 2,
+            "RAM": 4096,
+            "RAM_reserve_all": true,
+            "type": "vsphere-iso",
+            "vcenter_server": "{{user `vcenter_server`}}",
+            "username": "{{user `vcenter_username`}}",
+            "password": "{{user `vcenter_password`}}",
+            "cluster": "{{user `vcenter_cluster`}}",
+            "datastore": "{{user `vcenter_datastore`}}",
+            "insecure_connection": "true",
+            "vm_name": "{{user `windows_2016_vm_name`}}",
+            "vm_version": 15,
+            "guest_os_type": "windows9Server64Guest",
+            "communicator": "winrm",
+            "winrm_password": "{{user `winrm_password`}}",
+            "winrm_username": "{{user `winrm_username`}}",
+            "boot_order": "disk,cdrom",
+            "create_snapshot": "false",
+            "convert_to_template": "true",
+            "disk_controller_type": "pvscsi",
+            "floppy_files": [
+                "{{ template_dir }}/config/win2016/autounattend.xml",
+                "{{ template_dir }}/drivers/pvscsi-win8/pvscsi.cat",
+                "{{ template_dir }}/drivers/pvscsi-win8/pvscsi.inf",
+                "{{ template_dir }}/drivers/pvscsi-win8/pvscsi.sys",
+                "{{ template_dir }}/drivers/pvscsi-win8/txtsetup.oem",
+                "{{ template_dir }}/scripts/win_vmtools.cmd",
+                "{{ template_dir }}/scripts/setup.ps1"
+            ],
+            "iso_paths": [
+                "{{user `windows_2016_iso`}}",
+                "[] /vmimages/tools-isoimages/windows.iso"
+            ],
+            "network_adapters": [{
+                "network": "{{user `network`}}",
+                "network_card": "vmxnet3"
+            }],
+            "storage": [{
+                "disk_size": 51200,
+                "disk_thin_provisioned": true
+            }],
+            "content_library_destination": {
+                "library": "Templates",
+                "ovf": false,
+                "destroy": true
+            },
+            "remove_cdrom": "true",
+            "notes": "Default User: {{user `winrm_username`}}\nDefault Pass: {{user `winrm_password`}}\nBuilt by Packer @ {{isotime \"2006-01-02 03:04\"}}."
+        },
+        {
+            "name": "Windows2019",
+            "CPUs": 2,
+            "RAM": 4096,
+            "RAM_reserve_all": true,
+            "type": "vsphere-iso",
+            "vcenter_server": "{{user `vcenter_server`}}",
+            "username": "{{user `vcenter_username`}}",
+            "password": "{{user `vcenter_password`}}",
+            "cluster": "{{user `vcenter_cluster`}}",
+            "datastore": "{{user `vcenter_datastore`}}",
+            "insecure_connection": "true",
+            "vm_name": "{{user `windows_2019_vm_name`}}",
+            "vm_version": 15,
+            "guest_os_type": "windows9Server64Guest",
+            "communicator": "winrm",
+            "winrm_password": "{{user `winrm_password`}}",
+            "winrm_username": "{{user `winrm_username`}}",
+            "boot_order": "disk,cdrom",
+            "create_snapshot": "false",
+            "convert_to_template": "true",
+            "disk_controller_type": "pvscsi",
+            "floppy_files": [
+                "{{ template_dir }}/config/win2016/autounattend.xml",
+                "{{ template_dir }}/drivers/pvscsi-win8/pvscsi.cat",
+                "{{ template_dir }}/drivers/pvscsi-win8/pvscsi.inf",
+                "{{ template_dir }}/drivers/pvscsi-win8/pvscsi.sys",
+                "{{ template_dir }}/drivers/pvscsi-win8/txtsetup.oem",
+                "{{ template_dir }}/scripts/win_vmtools.cmd",
+                "{{ template_dir }}/scripts/setup.ps1"
+            ],
+            "iso_paths": [
+                "{{user `windows_2019_iso`}}",
+                "[] /vmimages/tools-isoimages/windows.iso"
+            ],
+            "network_adapters": [{
+                "network": "{{user `vcenter_network`}}",
+                "network_card": "vmxnet3"
+            }],
+            "storage": [{
+                "disk_size": 51200,
+                "disk_thin_provisioned": true
+            }],
+            "content_library_destination": {
+                "library": "Templates",
+                "ovf": false,
+                "destroy": true
+            },
+            "remove_cdrom": "true",
+            "notes": "Default User: {{user `winrm_username`}}\nDefault Pass: {{user `winrm_password`}}\nBuilt by Packer @ {{isotime \"2006-01-02 03:04\"}}."
+        }
+    ],
+    "provisioners": [{
+            "only": [
+                "Windows2012R2",
+                "Windows2016",
+                "Windows2019"
+            ],
+            "type": "powershell",
+            "scripts": [
+                "{{ template_dir }}\\scripts\\00_initial_config.ps1",
+                "{{ template_dir }}\\scripts\\10_install_cloudbase_init.ps1"
+            ]
+        },
+        {
+            "only": [
+                "Windows2012R2",
+                "Windows2016",
+                "Windows2019"
+            ],
+            "type": "windows-update",
+            "search_criteria": "IsInstalled=0",
+            "filters": [
+                "exclude:$_.Title -like '*Preview*'",
+                "include:$true"
+            ],
+            "update_limit": 25
+        },
+        {
+            "only": [
+                "Windows2012R2",
+                "Windows2016",
+                "Windows2019"
+            ],
+            "type": "powershell",
+            "scripts": [
+                "{{ template_dir }}\\scripts\\90_cleanup.ps1"
+            ]
+        }
+    ],
+    "sensitive-variables": [
+        "vcenter_password",
+        "ssh_password",
+        "winrm_password"
+    ]
 }
