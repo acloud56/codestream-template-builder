@@ -145,8 +145,8 @@
     ],
     "provisioners": [{
             "only": [
-                "Windows2016",
-                "Windows2019"
+                "WindowsServer2016",
+                "WindowsServer2019"
             ],
             "type": "file",
             "sources": [
@@ -157,8 +157,8 @@
         },
         {
             "only": [
-                "Windows2016",
-                "Windows2019"
+                "WindowsServer2016",
+                "WindowsServer2019"
             ],
             "type": "powershell",
             "scripts": [
@@ -168,8 +168,8 @@
         },
         {
             "only": [
-                "Windows2016",
-                "Windows2019"
+                "WindowsServer2016",
+                "WindowsServer2019"
             ],
             "type": "windows-update",
             "search_criteria": "IsInstalled=0",
@@ -181,8 +181,8 @@
         },
         {
             "only": [
-                "Windows2016",
-                "Windows2019"
+                "WindowsServer2016",
+                "WindowsServer2019"
             ],
             "type": "powershell",
             "scripts": [
