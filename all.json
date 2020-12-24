@@ -1,6 +1,6 @@
 {
     "builders": [{
-            "name": "CentOS8",
+            "name": "CentOS 8",
             "CPUs": 2,
             "RAM": 4096,
             "RAM_reserve_all": true,
@@ -47,7 +47,7 @@
             "notes": "Default SSH User: {{user `ssh_username`}}\nDefault SSH Password: {{user `ssh_password`}}\nBuilt by Packer @ {{isotime \"02-01-2006 03:04 PM\"}}."
         },
         {
-            "name": "Windows2016",
+            "name": "Windows Server 2016",
             "CPUs": 2,
             "RAM": 4096,
             "RAM_reserve_all": true,
@@ -95,7 +95,7 @@
             "notes": "Default User: {{user `winrm_username`}}\nDefault Password: {{user `winrm_password`}}\nBuilt by Packer @ {{isotime \"02-01-2006 03:04 PM\"}}."
         },
         {
-            "name": "Windows2019",
+            "name": "Windows Server 2019",
             "CPUs": 2,
             "RAM": 4096,
             "RAM_reserve_all": true,
