@@ -124,10 +124,6 @@
             "disk_controller_type": "pvscsi",
             "floppy_files": [
                 "{{ template_dir }}/config/win2019/autounattend.xml",
-                "{{ template_dir }}/drivers/pvscsi-win8/pvscsi.cat",
-                "{{ template_dir }}/drivers/pvscsi-win8/pvscsi.inf",
-                "{{ template_dir }}/drivers/pvscsi-win8/pvscsi.sys",
-                "{{ template_dir }}/drivers/pvscsi-win8/txtsetup.oem",
                 "{{ template_dir }}/scripts/win_vmtools.cmd",
                 "{{ template_dir }}/scripts/setup.ps1"
             ],
