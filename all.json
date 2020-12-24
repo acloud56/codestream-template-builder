@@ -152,8 +152,8 @@
             ],
             "type": "powershell",
             "scripts": [
-                "{{ template_dir }}\\scripts\\00_initial_config.ps1",
-                "{{ template_dir }}\\scripts\\10_install_cloudbase_init.ps1"
+                "{{ template_dir }}/scripts/00_initial_config.ps1",
+                "{{ template_dir }}/scripts/10_install_cloudbase_init.ps1"
             ]
         },
         {
@@ -176,7 +176,7 @@
             ],
             "type": "powershell",
             "scripts": [
-                "{{ template_dir }}\\scripts\\90_cleanup.ps1"
+                "{{ template_dir }}/scripts/90_cleanup.ps1"
             ]
         }
     ],
