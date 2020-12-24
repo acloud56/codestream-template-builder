@@ -78,7 +78,7 @@
                 "[] /vmimages/tools-isoimages/windows.iso"
             ],
             "network_adapters": [{
-                "network": "{{user `network`}}",
+                "network": "{{user `vcenter_network`}}",
                 "network_card": "vmxnet3"
             }],
             "storage": [{
