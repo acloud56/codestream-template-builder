@@ -12,7 +12,7 @@
             "datastore": "{{user `vcenter_datastore`}}",
             "folder": "{{user `vcenter_folder`}}",
             "insecure_connection": "true",
-            "vm_name": "centos8",
+            "vm_name": "{{user `centos8_vm_name`}}",
             "vm_version": 15,
             "guest_os_type": "centos8_64Guest",
             "communicator": "ssh",
