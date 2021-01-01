@@ -40,7 +40,7 @@
             }],
             "content_library_destination": {
                 "library": "Templates",
-                "name": "{{user `centos8_vm_name`}}-{{isotime `20060102030405`}}",
+                "name": "{{user `centos8_vm_name`}}-{{isotime `20060102-030405`}}",
                 "ovf": false,
                 "destroy": true
             },
