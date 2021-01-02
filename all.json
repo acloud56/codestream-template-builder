@@ -1,6 +1,6 @@
 {
     "builders": [{
-            "name": "CentOS 8",
+            "name": "CentOS-8",
             "CPUs": 2,
             "RAM": 4096,
             "RAM_reserve_all": true,
