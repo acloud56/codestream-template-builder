@@ -11,7 +11,7 @@ Remove-Item "C:\Users\Public\Desktop\*" -Recurse -Force
 
 #Remove pagefile
 cmd /c 'wmic computersystem where name="%computername%" set AutomaticManagedPagefile=False'
-sleep 10
+Start-Sleep 10
 cmd /c 'wmic pagefileset delete'
 
 #Add settings for disk cleanup and run disk cleanup
@@ -46,7 +46,7 @@ REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Wi
 REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Windows ESD installation files" /v StateFlags0100 /d 2 /t REG_DWORD /f
 REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Windows Upgrade Log Files" /v StateFlags0100 /d 2 /t REG_DWORD /f
 
-sleep 10
+Start-Sleep 10
 
 #Run disk cleanup. Takes forever to run, so commented out
 #Start-Process C:\Windows\System32\cleanmgr.exe -Wait -ArgumentList "/sagerun:100"
