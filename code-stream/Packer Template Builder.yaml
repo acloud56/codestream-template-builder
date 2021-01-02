@@ -227,9 +227,9 @@ stages:
           - '    templateName=$(echo "$image-$buildTime" | tr ''[:upper:]'' ''[:lower:]'');'
           - '    templateId=$(jq -r --arg templateName $templateName ''.content[] | select( .name == $templateName)
             | .id'' images.json)'
-          - '    echo $(jq ".imageMappings.mapping.\"[Packer Test] $image\".name = \"$templateName\""
+          - '    echo $(jq ".imageMappings.mapping.\"[Test] $image\".name = \"$templateName\""
             newImageProfile.json) > newImageProfile.json '
-          - '    echo $(jq ".imageMappings.mapping.\"[Packer Test] $image\".id = \"$templateId\"" newImageProfile.json)
+          - '    echo $(jq ".imageMappings.mapping.\"[Test] $image\".id = \"$templateId\"" newImageProfile.json)
             > newImageProfile.json '
           - done
           - ''
@@ -251,7 +251,7 @@ stages:
           - '  Cloud_Machine_$image:'
           - '    type: Cloud.Machine'
           - '    properties:'
-          - '      image: ''[Packer Test] $image'''
+          - '      image: ''[Test] $image'''
           - '      flavor: small'
           - '      constraints:'
           - '        - tag: ''cloud:vsphere'''
@@ -544,13 +544,14 @@ stages:
           - ''
           - ''
           - for image in $(echo "$buildImages" | tr ',' ' '); do
+          - '    $imageProfileName = $(echo $image | tr '-' ' ')
           - '    templateName=$(echo "$image-$buildTime" | tr ''[:upper:]'' ''[:lower:]'');'
           - '    templateId=$(jq -r --arg templateName $templateName ''.content[] | select( .name == $templateName)
             | .id'' images.json)'
           - ''
-          - '    echo $(jq ".imageMappings.mapping.\"[Packer] $image\".name = \"$templateName\"" releaseProfile.json)
+          - '    echo $(jq ".imageMappings.mapping.\"$imageProfileName\".name = \"$templateName\"" releaseProfile.json)
             > releaseProfile.json '
-          - '    echo $(jq ".imageMappings.mapping.\"[Packer] $image\".id = \"$templateId\"" releaseProfile.json)
+          - '    echo $(jq ".imageMappings.mapping.\"$imageProfileName\".id = \"$templateId\"" releaseProfile.json)
             > releaseProfile.json '
           - done
           - ''
@@ -559,7 +560,7 @@ stages:
             | jq 'del(.imageMappings)') > releaseProfile.json
           - ''
           - '# Remove the Packer Test image mappings'
-          - echo $(jq 'delpaths([paths | select(.[-1] | strings | contains("Packer Test"))])' releaseProfile.json)
+          - echo $(jq 'delpaths([paths | select(.[-1] | strings | contains("Test"))])' releaseProfile.json)
             > releaseProfile.json
           - ''
           - export profileJson=$(cat releaseProfile.json)
