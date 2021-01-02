@@ -6,25 +6,25 @@ icon: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAcFBgYGBQcGBgYICAc
 enabled: true
 concurrency: 1
 input:
-  __build: 'true'
-  __debug: 'false'
-  __test: 'true'
-  Packer-Build-Git-Repository: https://github.com/GaryFlynn/codestream-template-builder
   Packer-Build-Images: CentOS-8,Windows-Server-2016,Windows-Server-2019
-  Packer-Build-SSH-Password: SshUserPassword
-  Packer-Build-SSH-User: SshUserName
+  Packer-Build-Git-Repository: https://github.com/GaryFlynn/codestream-template-builder
+  Packer-Build-vCenter-Server: vCenterFQDN
+  Packer-Build-vCenter-User: vCenterUser
+  Packer-Build-vCenter-User-Password: vCenterPassword
   Packer-Build-vCenter-Cluster: ClusterName
   Packer-Build-vCenter-Datastore: DatastoreName
   Packer-Build-vCenter-Folder: FolderName
   Packer-Build-vCenter-Network: NetworkName
-  Packer-Build-vCenter-Server: vCenterFQDN
-  Packer-Build-vCenter-User: vCenterUser
-  Packer-Build-vCenter-User-Password: vCenterPassword
-  Packer-Build-vRA-Password: vRAPassword
-  Packer-Build-vRA-Project: vRAProject
   Packer-Build-vRA-Url: vRAURL
   Packer-Build-vRA-Username: vRAUser
+  Packer-Build-vRA-Password: vRAPassword
+  Packer-Build-vRA-Project: vRAProject
   Packer-Build-vRA-vSphere-Cloud-Account: vRAvSphereCloudAccount
+  Packer-Build-SSH-User: SshUserName
+  Packer-Build-SSH-Password: SshUserPassword
+  __build: 'true'
+  __debug: 'false'
+  __test: 'true'
 _inputMeta:
   Packer-Build-vCenter-Network:
     mandatory: true
@@ -100,6 +100,198 @@ stageOrder:
 - Test
 - Release
 stages:
+  Prepare Environment:
+    taskOrder:
+    - Configure Environment
+    - Get API Token
+    - Get vSphere Cloud Accounts,Get Project,Get Image Profiles
+    - Export Object IDs
+    - Debug
+    tasks:
+      Export Object IDs:
+        type: CI
+        input:
+          steps:
+          - echo '${Prepare Environment.Get vSphere Cloud Accounts.output.responseJson}' > vSphereCloudAccounts.json
+          - echo '${Prepare Environment.Get Project.output.responseJson}' > project.json
+          - echo '${Prepare Environment.Get Image Profiles.output.responseJson}' > imageProfiles.json
+          - ''
+          - export CloudAccountId=$(jq -r '.content[] | select( .hostName == "${input.Packer-Build-vCenter-Server}")
+            | .id' vSphereCloudAccounts.json)
+          - export ExternalRegionId=$(jq -r '.content[] | select( .hostName == "${input.Packer-Build-vCenter-Server}")
+            | .enabledRegionIds[0]' vSphereCloudAccounts.json)
+          - export RegionId=$(jq -r '.content[] | select( .hostName == "${input.Packer-Build-vCenter-Server}")
+            | ._links.regions.hrefs[0]' vSphereCloudAccounts.json | sed 's|/iaas/api/regions/||')
+          - export ProjectId=$(jq -r '.content[0].id' project.json)
+          - export ImageProfileId=$(jq -r --arg externalRegionId "$ExternalRegionId" '.content[] | select(
+            .externalRegionId == $externalRegionId) | .id' imageProfiles.json)
+          - ''
+          export:
+          - CloudAccountId
+          - ProjectId
+          - RegionId
+          - ImageProfileId
+          - ExternalRegionId
+          artifacts: [
+            ]
+          process: [
+            ]
+      Get vSphere Cloud Accounts:
+        type: REST
+        input:
+          action: get
+          url: ${input.Packer-Build-vRA-Url}/iaas/api/cloud-accounts-vsphere
+          headers:
+            Accept: application/json
+            Authorization: ${Prepare Environment.Get API Token.output.responseHeaders.Authorization}
+          payload: ''
+      Get Project:
+        type: REST
+        input:
+          action: get
+          url: ${input.Packer-Build-vRA-Url}/iaas/api/projects?$filter=(name eq '${input.Packer-Build-vRA-Project}')
+          headers:
+            Accept: application/json
+            Authorization: ${Prepare Environment.Get API Token.output.responseHeaders.Authorization}
+          payload: ''
+      Get API Token:
+        type: REST
+        input:
+          action: post
+          url: ${input.Packer-Build-vRA-Url}/csp/gateway/am/idp/auth/login?access_token
+          headers:
+            Accept: application/json
+            Content-Type: application/json
+          payload: |-
+            {
+              "username": "${Prepare Environment.Configure Environment.output.exports.vraUser}",
+              "password": "${input.Packer-Build-vRA-Password}",
+              "domain": "${Prepare Environment.Configure Environment.output.exports.vraDomain}"
+            }
+      Get Image Profiles:
+        type: REST
+        input:
+          action: get
+          url: ${input.Packer-Build-vRA-Url}/iaas/api/image-profiles
+          headers:
+            Accept: application/json
+            Authorization: ${Prepare Environment.Get API Token.output.responseHeaders.Authorization}
+          payload: ''
+      Configure Environment:
+        type: CI
+        input:
+          steps:
+          - export BUILDTIME="$(date "+%Y%m%d-%H%M%S")"
+          - ''
+          - '# Create environment variables'
+          - cat <<EOF >> /build/packer.secrets
+          - export VCPASS='${input.Packer-Build-vCenter-User-Password}'
+          - export VCSERVER="${input.Packer-Build-vCenter-Server}"
+          - export VCUSER="${input.Packer-Build-vCenter-User}"
+          - export VCDATASTORE="${input.Packer-Build-vCenter-Datastore}"
+          - export VCFOLDER="${input.Packer-Build-vCenter-Folder}"
+          - export VCCLUSTER="${input.Packer-Build-vCenter-Cluster}"
+          - export VCNETWORK="${input.Packer-Build-vCenter-Network}"
+          - export SSHUSER="${input.Packer-Build-SSH-User}"
+          - export SSHPASS="${input.Packer-Build-SSH-Password}"
+          - export BUILDTIME=$BUILDTIME
+          - EOF
+          - '# Split the username for domain authentication'
+          - IFS="@" read user domain <<< "${input.Packer-Build-vRA-Username}"
+          - export vraUser=$user
+          - export vraDomain=$domain
+          - '# Get templates from git'
+          - git clone ${input.Packer-Build-Git-Repository} templates
+          - ''
+          - ''
+          - ''
+          export:
+          - BUILDTIME
+          - vraUser
+          - vraDomain
+          artifacts: [
+            ]
+          process: [
+            ]
+      Debug:
+        type: UserOperation
+        preCondition: '"${input.__debug}" == "true"'
+        input:
+          approvers:
+          - ${requestBy}
+          approverGroups: [
+            ]
+          summary: Check values
+          description: ''
+          sendemail: false
+          expiration: 3
+          expirationUnit: DAYS
+          pipelineName: ${name}
+          cancelPreviousPendingUserOp: false
+  Build:
+    taskOrder:
+    - Build Packer Images
+    - Trigger Image Enumeration
+    - Wait For Enumeration
+    - Get Images
+    tasks:
+      Wait For Enumeration:
+        type: POLL
+        preCondition: '"${input.__build}" == "true"'
+        input:
+          url: ${input.Packer-Build-vRA-Url}/iaas/api/request-tracker/${Build.Trigger Image Enumeration.output.responseBody.id}
+          pollCount: 5
+          pollIntervalSeconds: 60
+          ignoreFailure: true
+          headers:
+            Accept: application/json
+            Content-Type: application/json
+            Authorization: ${Prepare Environment.Get API Token.output.responseHeaders.Authorization}
+          exitCriteria:
+            success: status == 'FINISHED'
+            failure: status == 'FAILED'
+      Trigger Image Enumeration:
+        type: REST
+        preCondition: '"${input.__build}" == "true"'
+        input:
+          action: post
+          url: ${input.Packer-Build-vRA-Url}/iaas/api/cloud-accounts/${Prepare Environment.Export Object
+            IDs.output.exports.CloudAccountId}/private-image-enumeration
+          headers:
+            Accept: application/json
+            Authorization: ${Prepare Environment.Get API Token.output.responseHeaders.Authorization}
+          payload: ''
+      Build Packer Images:
+        type: CI
+        preCondition: '"${input.__build}" == "true"'
+        input:
+          steps:
+          - set +x
+          - source /build/packer.secrets
+          - set -x
+          - ''
+          - cd /build/templates/
+          - '# Validate config'
+          - packer validate -var-file=variables.json -only=${input.Packer-Build-Images} all.json
+          - '# Build validated config'
+          - packer build -force -var-file=variables.json -only=${input.Packer-Build-Images} all.json
+          export: [
+            ]
+          artifacts: [
+            ]
+          process: [
+            ]
+      Get Images:
+        type: REST
+        input:
+          action: get
+          url: ${input.Packer-Build-vRA-Url}/iaas/api/fabric-images?$filter=(name eq '*-${Prepare Environment.Configure
+            Environment.output.exports.BUILDTIME}')
+          headers:
+            Content-Type: application/json
+            Authorization: ${Prepare Environment.Get API Token.output.responseHeaders.Authorization}
+            Accept: application/json
+          payload: ''
   Test:
     taskOrder:
     - Create Image Profile JSON
@@ -299,199 +491,7 @@ stages:
           headers:
             Content-Type: application/json
             Authorization: ${Prepare Environment.Get API Token.output.responseHeaders.Authorization}
-          payload: ''
-  Build:
-    taskOrder:
-    - Build Packer Images
-    - Trigger Image Enumeration
-    - Wait For Enumeration
-    - Get Images
-    tasks:
-      Wait For Enumeration:
-        type: POLL
-        preCondition: '"${input.__build}" == "true"'
-        input:
-          url: ${input.Packer-Build-vRA-Url}/iaas/api/request-tracker/${Build.Trigger Image Enumeration.output.responseBody.id}
-          pollCount: 5
-          pollIntervalSeconds: 60
-          ignoreFailure: true
-          headers:
-            Accept: application/json
-            Content-Type: application/json
-            Authorization: ${Prepare Environment.Get API Token.output.responseHeaders.Authorization}
-          exitCriteria:
-            success: status == 'FINISHED'
-            failure: status == 'FAILED'
-      Trigger Image Enumeration:
-        type: REST
-        preCondition: '"${input.__build}" == "true"'
-        input:
-          action: post
-          url: ${input.Packer-Build-vRA-Url}/iaas/api/cloud-accounts/${Prepare Environment.Export Object
-            IDs.output.exports.CloudAccountId}/private-image-enumeration
-          headers:
-            Accept: application/json
-            Authorization: ${Prepare Environment.Get API Token.output.responseHeaders.Authorization}
-          payload: ''
-      Build Packer Images:
-        type: CI
-        preCondition: '"${input.__build}" == "true"'
-        input:
-          steps:
-          - set +x
-          - source /build/packer.secrets
-          - set -x
-          - ''
-          - cd /build/templates/
-          - '# Validate config'
-          - packer validate -var-file=variables.json -only=${input.Packer-Build-Images} all.json
-          - '# Build validated config'
-          - packer build -force -var-file=variables.json -only=${input.Packer-Build-Images} all.json
-          export: [
-            ]
-          artifacts: [
-            ]
-          process: [
-            ]
-      Get Images:
-        type: REST
-        input:
-          action: get
-          url: ${input.Packer-Build-vRA-Url}/iaas/api/fabric-images?$filter=(name eq '*-${Prepare Environment.Configure
-            Environment.output.exports.BUILDTIME}')
-          headers:
-            Content-Type: application/json
-            Authorization: ${Prepare Environment.Get API Token.output.responseHeaders.Authorization}
-            Accept: application/json
-          payload: ''
-  Prepare Environment:
-    taskOrder:
-    - Configure Environment
-    - Get API Token
-    - Get vSphere Cloud Accounts,Get Project,Get Image Profiles
-    - Export Object IDs
-    - Debug
-    tasks:
-      Export Object IDs:
-        type: CI
-        input:
-          steps:
-          - echo '${Prepare Environment.Get vSphere Cloud Accounts.output.responseJson}' > vSphereCloudAccounts.json
-          - echo '${Prepare Environment.Get Project.output.responseJson}' > project.json
-          - echo '${Prepare Environment.Get Image Profiles.output.responseJson}' > imageProfiles.json
-          - ''
-          - export CloudAccountId=$(jq -r '.content[] | select( .hostName == "${input.Packer-Build-vCenter-Server}")
-            | .id' vSphereCloudAccounts.json)
-          - export ExternalRegionId=$(jq -r '.content[] | select( .hostName == "${input.Packer-Build-vCenter-Server}")
-            | .enabledRegionIds[0]' vSphereCloudAccounts.json)
-          - export RegionId=$(jq -r '.content[] | select( .hostName == "${input.Packer-Build-vCenter-Server}")
-            | ._links.regions.hrefs[0]' vSphereCloudAccounts.json | sed 's|/iaas/api/regions/||')
-          - export ProjectId=$(jq -r '.content[0].id' project.json)
-          - export ImageProfileId=$(jq -r --arg externalRegionId "$ExternalRegionId" '.content[] | select(
-            .externalRegionId == $externalRegionId) | .id' imageProfiles.json)
-          - ''
-          export:
-          - CloudAccountId
-          - ProjectId
-          - RegionId
-          - ImageProfileId
-          - ExternalRegionId
-          artifacts: [
-            ]
-          process: [
-            ]
-      Get vSphere Cloud Accounts:
-        type: REST
-        input:
-          action: get
-          url: ${input.Packer-Build-vRA-Url}/iaas/api/cloud-accounts-vsphere
-          headers:
-            Accept: application/json
-            Authorization: ${Prepare Environment.Get API Token.output.responseHeaders.Authorization}
-          payload: ''
-      Get Project:
-        type: REST
-        input:
-          action: get
-          url: ${input.Packer-Build-vRA-Url}/iaas/api/projects?$filter=(name eq '${input.Packer-Build-vRA-Project}')
-          headers:
-            Accept: application/json
-            Authorization: ${Prepare Environment.Get API Token.output.responseHeaders.Authorization}
-          payload: ''
-      Get API Token:
-        type: REST
-        input:
-          action: post
-          url: ${input.Packer-Build-vRA-Url}/csp/gateway/am/idp/auth/login?access_token
-          headers:
-            Accept: application/json
-            Content-Type: application/json
-          payload: |-
-            {
-              "username": "${Prepare Environment.Configure Environment.output.exports.vraUser}",
-              "password": "${input.Packer-Build-vRA-Password}",
-              "domain": "${Prepare Environment.Configure Environment.output.exports.vraDomain}"
-            }
-      Get Image Profiles:
-        type: REST
-        input:
-          action: get
-          url: ${input.Packer-Build-vRA-Url}/iaas/api/image-profiles
-          headers:
-            Accept: application/json
-            Authorization: ${Prepare Environment.Get API Token.output.responseHeaders.Authorization}
-          payload: ''
-      Configure Environment:
-        type: CI
-        input:
-          steps:
-          - export BUILDTIME="$(date "+%Y%m%d-%H%M%S")"
-          - ''
-          - '# Create environment variables'
-          - cat <<EOF >> /build/packer.secrets
-          - export VCPASS='${input.Packer-Build-vCenter-User-Password}'
-          - export VCSERVER="${input.Packer-Build-vCenter-Server}"
-          - export VCUSER="${input.Packer-Build-vCenter-User}"
-          - export VCDATASTORE="${input.Packer-Build-vCenter-Datastore}"
-          - export VCFOLDER="${input.Packer-Build-vCenter-Folder}"
-          - export VCCLUSTER="${input.Packer-Build-vCenter-Cluster}"
-          - export VCNETWORK="${input.Packer-Build-vCenter-Network}"
-          - export SSHUSER="${input.Packer-Build-SSH-User}"
-          - export SSHPASS="${input.Packer-Build-SSH-Password}"
-          - export BUILDTIME=$BUILDTIME
-          - EOF
-          - '# Split the username for domain authentication'
-          - IFS="@" read user domain <<< "${input.Packer-Build-vRA-Username}"
-          - export vraUser=$user
-          - export vraDomain=$domain
-          - '# Get templates from git'
-          - git clone ${input.Packer-Build-Git-Repository} templates
-          - ''
-          - ''
-          - ''
-          export:
-          - BUILDTIME
-          - vraUser
-          - vraDomain
-          artifacts: [
-            ]
-          process: [
-            ]
-      Debug:
-        type: UserOperation
-        preCondition: '"${input.__debug}" == "true"'
-        input:
-          approvers:
-          - ${requestBy}
-          approverGroups: [
-            ]
-          summary: Check values
-          description: ''
-          sendemail: false
-          expiration: 3
-          expirationUnit: DAYS
-          pipelineName: ${name}
-          cancelPreviousPendingUserOp: false
+          payload: ''  
   Release:
     taskOrder:
     - Get Image Profile
