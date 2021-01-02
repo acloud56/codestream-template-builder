@@ -89,6 +89,7 @@
             }],
             "content_library_destination": {
                 "library": "Templates",
+                "name": "{{user `windows_2016_vm_name`}}-{{user `buildtime`}}",
                 "ovf": false,
                 "destroy": true
             },
@@ -137,6 +138,7 @@
             }],
             "content_library_destination": {
                 "library": "Templates",
+                "name": "{{user `windows_2019_vm_name`}}-{{user `buildtime`}}",
                 "ovf": false,
                 "destroy": true
             },
