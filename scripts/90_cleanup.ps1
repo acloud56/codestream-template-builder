@@ -1,5 +1,6 @@
 #Clear update cache
-Stop-Service  wuauserv
+net stop wuauserv
+net stop bits
 Remove-Item "C:\Windows\SoftwareDistribution\Download\*" -Recurse
 
 #Clear temp folder
