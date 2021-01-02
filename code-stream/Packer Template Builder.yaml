@@ -544,22 +544,21 @@ stages:
           - ''
           - ''
           - for image in $(echo "$buildImages" | tr ',' ' '); do
-          - '    echo "Line 1"'
           - '    imageProfileName=$(echo $image | tr ''-'' '' '')'
-          - '    echo "Line 2"'
           - '    templateName=$(echo "$image-$buildTime" | tr ''[:upper:]'' ''[:lower:]'');'
-          - '    echo "Line 3"'
           - '    templateId=$(jq -r --arg templateName $templateName ''.content[] | select( .name == $templateName)
             | .id'' images.json)'
           - ''
-          - '    echo "Line 4"'
-          - '    echo $(jq ".imageMappings.mapping.\"(echo $imageProfileName)\".name = \"$templateName\"" releaseProfile.json)
+          - 'echo "Pre-updated releaseProfile.json"'
+          - 'cat releaseProfile.json'
+          - '    echo $(jq ".imageMappings.mapping.$imageProfileName.name = $templateName" releaseProfile.json)
             > releaseProfile.json '
-          - '    echo "Line 5"'
-          - '    echo $(jq ".imageMappings.mapping.\"(echo $imageProfileName)\".id = \"$templateId\"" releaseProfile.json)
+          - '    echo $(jq ".imageMappings.mapping.$imageProfileName.id = $templateId" releaseProfile.json)
             > releaseProfile.json '
           - done
           - ''
+          - 'echo "Post-updated releaseProfile.json"'
+          - 'cat releaseProfile.json'
           - imageMapping=$(jq '.imageMappings.mapping' releaseProfile.json)
           - echo $(jq --argjson imageMapping "$imageMapping" '.imageMapping = $imageMapping' releaseProfile.json
             | jq 'del(.imageMappings)') > releaseProfile.json
