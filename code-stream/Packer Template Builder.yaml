@@ -544,7 +544,7 @@ stages:
           - ''
           - ''
           - for image in $(echo "$buildImages" | tr ',' ' '); do
-          - '    $imageProfileName = $(echo $image | tr ''-'' '' '')'
+          - '    imageProfileName = $(echo $image | tr ''-'' '' '')'
           - '    templateName=$(echo "$image-$buildTime" | tr ''[:upper:]'' ''[:lower:]'');'
           - '    templateId=$(jq -r --arg templateName $templateName ''.content[] | select( .name == $templateName)
             | .id'' images.json)'
