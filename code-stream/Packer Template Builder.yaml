@@ -494,12 +494,12 @@ stages:
           payload: ''  
   Release:
     taskOrder:
-    - Get Image Profile
+    - Get Image Profiles
     - Create Image Profile JSON
     - Debug
     - Create Image Profile,Update Image Profile
     tasks:
-      Get Image Profile:
+      Get Image Profiles:
         type: REST
         input:
           action: get
