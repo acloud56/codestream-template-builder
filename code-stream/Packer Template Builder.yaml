@@ -497,7 +497,7 @@ stages:
     - Get Image Profile
     - Create Image Profile JSON
     - Debug
-    - Update Image Profile
+    - Create Image Profile,Update Image Profile
     tasks:
       Get Image Profile:
         type: REST
@@ -508,8 +508,19 @@ stages:
             Accept: application/json
             Authorization: ${Prepare Environment.Get API Token.output.responseHeaders.Authorization}
           payload: ''
+      Create Image Profile:
+        type: REST
+        preCondition: '"${Release.Create Image Profile JSON.output.exports.imageProfileId}" == ""'
+        input:
+          action: post
+          url: ${input.Packer-Build-vRA-Url}/iaas/api/image-profiles
+          headers:
+            Content-Type: application/json
+            Authorization: ${Prepare Environment.Get API Token.output.responseHeaders.Authorization}
+          payload: ${Release.Create Image Profile JSON.output.exports.profileJson}
       Update Image Profile:
         type: REST
+        preCondition: '"${Release.Create Image Profile JSON.output.exports.imageProfileId}" != ""'
         input:
           action: patch
           url: ${input.Packer-Build-vRA-Url}/iaas/api/image-profiles/${Release.Create Image Profile JSON.output.exports.imageProfileId}
