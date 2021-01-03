@@ -86,7 +86,7 @@
                 <ProtectYourPC>3</ProtectYourPC>
             </OOBE>
             
-            <TimeZone>W. Europe Standard Time</TimeZone>
+            <TimeZone>GMT Standard Time</TimeZone>
             
             <UserAccounts>
                  <AdministratorPassword>
