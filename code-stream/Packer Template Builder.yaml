@@ -532,7 +532,7 @@ stages:
         type: CI
         input:
           steps:
-          - echo '${Release.Get Image Profile.output.responseJson}' > imageProfiles.json
+          - echo '${Release.Get Image Profiles.output.responseJson}' > imageProfiles.json
           - ''
           - buildImages=${input.Packer-Build-Images}
           - buildTime=${Prepare Environment.Configure Environment.output.exports.BUILDTIME}
