@@ -15,7 +15,7 @@
     "winrm_username": "Administrator",
     "winrm_password": "{{ env `SSHPASS`}}",
 
-    "http_server": "https://raw.githubusercontent.com/GaryFlynn/codestream-template-builder/main/config",
+    "http_server": "https://github.com/acloud56/codestream-template-builder/main/config",
 
     "ubuntu2004_vm_name": "ubuntu-2004",
     "ubuntu2004_iso": "[{{ env `VCDATASTORE`}}] ISOs/ubuntu-18.04.3-server-amd64.iso",
