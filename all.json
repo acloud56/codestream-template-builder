@@ -91,7 +91,7 @@
                 "network": "{{user `vcenter_network`}}"
             }],
             "remove_cdrom": "true"
-            "notes": "Default User: {{user `winrm_username`}}\nDefault Password: {{user `winrm_password`}}\nBuilt by Packer @ {{isotime \"02-01-2006 03:04 PM\"}}."
+            "notes": "Built by Packer @ {{isotime \"02-01-2006 03:04 PM\"}}."
         },
         {
             "name": "Windows-Server-2019",
@@ -141,7 +141,7 @@
             },
             "remove_cdrom": "true",
             "notes": "Default User: {{user `winrm_username`}}\nDefault Password: {{user `winrm_password`}}\nBuilt by Packer @ {{isotime \"02-01-2006 03:04 PM\"}}."
-        }
+        },
     ],
     "provisioners": [{
             "only": [
