@@ -68,7 +68,7 @@
             "convert_to_template": "true",
             "disk_controller_type": "pvscsi",
             "storage": [{
-                "disk_size": "61440",
+                "disk_size": "51200",
                 "disk_thin_provisioned":true},
                         {
                 "disk_size": 40960,
