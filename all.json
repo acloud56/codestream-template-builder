@@ -90,7 +90,7 @@
             "network_adapters": [{
                 "network": "{{user `vcenter_network`}}"
             }],
-            "remove_cdrom": "true"
+            "remove_cdrom": "true",
             "notes": "Built by Packer @ {{isotime \"02-01-2006 03:04 PM\"}}."
         },
         {
