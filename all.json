@@ -51,7 +51,6 @@
             "name": "Windows-Server-2016",
             "CPUs": 2,
             "RAM": 4096,
-            "RAM_reserve_all": true,
             "type": "vsphere-iso",
             "vcenter_server": "{{user `vcenter_server`}}",
             "username": "{{user `vcenter_username`}}",
@@ -70,6 +69,15 @@
             "create_snapshot": "false",
             "convert_to_template": "true",
             "disk_controller_type": "pvscsi",
+            "storage": [{
+                "disk_size": "61440",
+                "disk_thin_provisioned":true},
+                        {
+                "disk_size": 40960,
+                "disk_thin_provisioned":true}, 
+                        {
+                 "disk_size": 20480,
+                 "disk_thin_provisioned":true}],
             "floppy_files": [
                 "{{ template_dir }}/config/win2016/autounattend.xml",
                 "{{ template_dir }}/scripts/win_vmtools.cmd",
@@ -80,20 +88,9 @@
                 "[] /vmimages/tools-isoimages/windows.iso"
             ],
             "network_adapters": [{
-                "network": "{{user `vcenter_network`}}",
-                "network_card": "vmxnet3"
+                "network": "{{user `vcenter_network`}}"
             }],
-            "storage": [{
-                "disk_size": 51200,
-                "disk_thin_provisioned": true
-            }],
-            "content_library_destination": {
-                "library": "Templates",
-                "name": "{{user `windows_2016_vm_name`}}-{{user `buildtime`}}",
-                "ovf": false,
-                "destroy": true
-            },
-            "remove_cdrom": "true",
+            "remove_cdrom": "true"
             "notes": "Default User: {{user `winrm_username`}}\nDefault Password: {{user `winrm_password`}}\nBuilt by Packer @ {{isotime \"02-01-2006 03:04 PM\"}}."
         },
         {
