@@ -68,7 +68,7 @@
             "winrm_password": "VMware1!",
             "boot_order": "disk,cdrom",
             "create_snapshot": "false",
-            "convert_to_template": "false",
+            "convert_to_template": "true",
             "disk_controller_type": "pvscsi",
             "floppy_files": [
                 "{{ template_dir }}/config/win2016/autounattend.xml",
@@ -117,7 +117,7 @@
             "winrm_password": "VMware1!",
             "boot_order": "disk,cdrom",
             "create_snapshot": "false",
-            "convert_to_template": "false",
+            "convert_to_template": "true",
             "disk_controller_type": "pvscsi",
             "floppy_files": [
                 "{{ template_dir }}/config/win2019/autounattend.xml",
